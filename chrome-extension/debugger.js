@@ -1,14 +1,22 @@
 chrome.runtime.onMessage.addListener(function(header) {
-	for (var i in header) {
-		parseHeaders(header[i])
+	var list = parseHeaders(header);
+	for (var i in list) {
+		output(list[i]);
 	}
 });
 
 function parseHeaders(header) {
-	if (!header.name.match(/^Debugger\|/)) {
-		return;
+	var list = [];
+	for (var i in header) {
+		if (!header[i].name.match(/^Debugger\|/)) {
+			continue;
+		}
+		list.push(JSON.parse(header[i].value));
 	}
-	output(JSON.parse(header.value));
+	list.sort(function(a, b) {
+		return a.time - b.time;
+	});
+	return list;
 }
 
 function output(message) {
