@@ -6,14 +6,15 @@
 	"description": "Simple debugger that uses information sent via headers.",
 	"permissions": [
 		"webRequest",
+		"webRequestBlocking",
 		"tabs",
-		"*://*/*"
+		"<all_urls>"
 	],
 	"background": {
 		"scripts": ["background.js"]
 	},
 	"content_scripts": [{
 		"js": ["debugger.js"],
-		"matches": ["*://*/*"]
+		"matches": ["<all_urls>"]
 	}]
 }
