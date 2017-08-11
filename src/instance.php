@@ -24,15 +24,15 @@ class instance
 
 	public function __destruct()
 	{
-		if (php_sapi_name() != 'cli') {
-			$buffer = ob_get_clean();
+		if (php_sapi_name() == 'cli') {
+			return;
 		}
+
+		$buffer = ob_get_clean();
 		foreach ($this->queue as $message) {
 			header("Debugger|{$message['id']}: " . json_encode($message));
 		}
-		if (php_sapi_name() != 'cli') {
-			echo $buffer;
-		}
+		echo $buffer;
 	}
 
 	protected function add($message, $level)
