@@ -14,7 +14,9 @@ class instance
 
 	public function __construct($label = null)
 	{
-		ob_start();
+		if (php_sapi_name() != 'cli') {
+			ob_start();
+                }
 		if (!is_null($label)) {
 			$this->label = $label;
 		}
@@ -22,11 +24,15 @@ class instance
 
 	public function __destruct()
 	{
-		$buffer = ob_get_clean();
+		if (php_sapi_name() != 'cli') {
+			$buffer = ob_get_clean();
+		}
 		foreach ($this->queue as $message) {
 			header("Debugger|{$message['id']}: " . json_encode($message));
 		}
-		echo $buffer;
+		if (php_sapi_name() != 'cli') {
+			echo $buffer;
+		}
 	}
 
 	protected function add($message, $level)
