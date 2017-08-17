@@ -1,12 +1,9 @@
-chrome.webRequest.onHeadersReceived.addListener(function(info) {
-	chrome.tabs.onUpdated.addListener(function (tabId, changeInfo) {
-		if (!info || tabId !== info.tabId || changeInfo.status !== 'complete') {
-			return;
-		}
-		chrome.tabs.sendMessage(info.tabId, info.responseHeaders);
-		info = null;
-	});
-}, {urls: ['<all_urls>']}, ['responseHeaders']);
+chrome.extension.onMessage.addListener(function(header) {
+	var list = parseHeaders(header);
+	for (var i in list) {
+		chrome.tabs.executeScript(null, {'code': '(' + output + ')(' + JSON.stringify(list[i]) + ')'});
+	}
+});
 
 chrome.webRequest.onBeforeSendHeaders.addListener(function(info) {
 	var headers = info.requestHeaders, response = {};
@@ -19,3 +16,30 @@ chrome.webRequest.onBeforeSendHeaders.addListener(function(info) {
 	response.requestHeaders = headers;
 	return response;
 }, {urls: ['<all_urls>']}, ['requestHeaders', 'blocking']);
+
+function parseHeaders(header) {
+	var list = [];
+	for (var i in header) {
+		if (!header[i].name.match(/^Debugger\|/)) {
+			continue;
+		}
+		list.push(JSON.parse(header[i].value));
+	}
+	list.sort(function(a, b) {
+		return a.time - b.time;
+	});
+	return list;
+}
+
+function output(message) {
+	var date = new Date(message.time * 1000);
+	var output = '[';
+	output += date.getFullYear() + '-';
+	output += ('00' + date.getMonth()).substr(-2) + '-';
+	output += ('00' + date.getDay()).substr(-2) + ' ';
+	output += ('00' + date.getHours()).substr(-2) + ':';
+	output += ('00' + date.getMinutes()).substr(-2) + ':';
+	output += ('00' + date.getSeconds()).substr(-2) + '.';
+	output += date.getMilliseconds() + ']';
+	console[message.level](output, '[' + message.label + ']', message.information);
+}

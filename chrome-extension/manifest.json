@@ -2,7 +2,7 @@
 	"manifest_version": 2,
 	"name": "Debugger",
 	"short_name": "Debugger",
-	"version": "0.1",
+	"version": "0.2",
 	"description": "Simple debugger that uses information sent via headers.",
 	"permissions": [
 		"webRequest",
@@ -13,8 +13,5 @@
 	"background": {
 		"scripts": ["background.js"]
 	},
-	"content_scripts": [{
-		"js": ["debugger.js"],
-		"matches": ["<all_urls>"]
-	}]
+	"devtools_page": "devtools.html"
 }
