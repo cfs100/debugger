@@ -14,7 +14,9 @@ class instance
 
 	public function __construct($label = null)
 	{
-		ob_start();
+		if (php_sapi_name() != 'cli') {
+			ob_start();
+                }
 		if (!is_null($label)) {
 			$this->label = $label;
 		}
@@ -22,6 +24,10 @@ class instance
 
 	public function __destruct()
 	{
+		if (php_sapi_name() == 'cli') {
+			return;
+		}
+
 		$buffer = ob_get_clean();
 		foreach ($this->queue as $message) {
 			header("Debugger|{$message['id']}: " . json_encode($message));
