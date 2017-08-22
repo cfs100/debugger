@@ -26,7 +26,7 @@ function parseHeaders(header) {
 		list.push(JSON.parse(header[i].value));
 	}
 	list.sort(function(a, b) {
-		return a.time - b.time;
+		return a.count - b.count;
 	});
 	return list;
 }

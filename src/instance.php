@@ -11,12 +11,13 @@ class instance
 
 	protected $label = 'Debugger';
 	protected $queue = [];
+	protected static $count = 0;
 
 	public function __construct($label = null)
 	{
 		if (php_sapi_name() != 'cli') {
 			ob_start();
-                }
+		}
 		if (!is_null($label)) {
 			$this->label = $label;
 		}
@@ -41,6 +42,7 @@ class instance
 
 		$this->queue[$id] = [
 			'id' => $id,
+			'count' => ++$this::$count,
 			'level' => $level,
 			'label' => $this->label,
 			'time' => microtime(true),
