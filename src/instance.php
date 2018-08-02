@@ -9,14 +9,18 @@ class instance
 	const LEVEL_ERROR = 'error';
 	const LEVEL_WARNING = 'warn';
 
+	protected $enabled = false;
 	protected $label = 'Debugger';
 	protected $queue = [];
 	protected static $count = 0;
 
 	public function __construct($label = null)
 	{
-		if (php_sapi_name() != 'cli') {
-			ob_start();
+		if (strpos(filter_input(INPUT_SERVER, 'HTTP_USER_AGENT'), 'cfs100/debugger') !== false) {
+			if (php_sapi_name() != 'cli') {
+				$this->enabled = true;
+				ob_start();
+			}
 		}
 		if (!is_null($label)) {
 			$this->label = $label;
@@ -25,14 +29,9 @@ class instance
 
 	public function __destruct()
 	{
-		if (php_sapi_name() == 'cli') {
+		if (!$this->enabled) {
 			return;
 		}
-
-		if (strpos(filter_input(INPUT_SERVER, 'HTTP_USER_AGENT'), 'cfs100/debugger') === false) {
-			return;
-		}
-
 		$buffer = ob_get_clean();
 		foreach ($this->queue as $message) {
 			header("Debugger|{$message['id']}: " . json_encode($message));
