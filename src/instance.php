@@ -29,6 +29,10 @@ class instance
 			return;
 		}
 
+		if (strpos(filter_input(INPUT_SERVER, 'HTTP_USER_AGENT'), 'cfs100/debugger') === false) {
+			return;
+		}
+
 		$buffer = ob_get_clean();
 		foreach ($this->queue as $message) {
 			header("Debugger|{$message['id']}: " . json_encode($message));
