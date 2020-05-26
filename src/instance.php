@@ -29,7 +29,7 @@ class instance
 
 	public function __destruct()
 	{
-		if (!$this->enabled) {
+		if (headers_sent() || !$this->enabled) {
 			return;
 		}
 		$buffer = ob_get_clean();
